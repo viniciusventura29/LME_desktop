@@ -1,12 +1,8 @@
-import numbers
-from re import A
 from PyQt5 import uic, QtWidgets,QtCore, QtGui
 import matplotlib.pyplot as plt
 import pandas as pd
-import openpyxl
 from datetime import date
-from datetime import datetime
-import sys
+import win32com.client as cli
 
 app = QtWidgets.QApplication([])
 
@@ -25,7 +21,6 @@ table_dolar = pd.read_excel('planilha/LME_fonte_de_dados.xlsx', sheet_name='dola
 
 
 class Main:
-    sim = 0
     def exibicao_home():
         tela_opcoes.close()
         tela_variacao.close()
@@ -75,8 +70,6 @@ class Main:
         tela_tamarana.media_3_meses.clear()
         tela_tamarana.variacao_porcentual.clear()
         tela_tamarana.gatilho.clear()
-        # tempo.count()
-        # tempo.timer()
 
     def aviso_atualizacao_cancelar():
         tela_aviso_atualizacao.close()
@@ -90,43 +83,27 @@ class Main:
 
     def close_aviso_med():
         tela_aviso_med_mensal.close()
+        
+    def getExcel():
+        outlook = cli.Dispatch('Outlook.Application')
+        namespace = outlook.GetNamespace("MAPI")
 
-# class Tempo():
-    def __init__(self):
-        self.sim = 0
+        acc = namespace.Folders['Campinas.ETS@br.bosch.com']
+        inbox = acc.Folders('Inbox')
 
-    def count(self):
-        self.sim = 1
+        all_inbox = inbox.Items
 
-    def timer(self):
-        date = datetime.now()  # pega a data atual
-        date_time = date.strftime("%m-%d-%Y")  # transforma a data em string formato mes-dia-ano
-
-        if (self.sim == 1):  # se o botao de atualizar preço for clicado entra no if
-            date_archive = open('date_lme', 'w')  # abre o arquivo txt para modificacao
-            date_archive.writelines(date_time)  # manda a data atual para o txt, na primeira linha
-            self.sim = 0
-        else:  # se o botao nao tiver sido clicado ele entra no else, ou seja, sempre o arquivo rodar e nao for dia de atualizacao
-            date_archive = open('date_lme', 'r')  # abre o txt apenas para leitura
-            initial_date = str(date_archive.readlines())  # le a primira linha obrigando-a a ser str e nao list
-            initial_date = initial_date.replace("'", "")  # remove o aspas que a linha anterior colocou
-            initial_date = initial_date.replace("[", "")  # remove o colchete porque estava como lista
-            initial_date = initial_date.replace("]", "")
-            initial_date_list = initial_date.split("-")  # divide a data que pegamos no txt em uma lista com as tres informacoes
-            date_current_list = date_time.split("-")  # faz o mesmo com a data atual
-
-            month_variation = int(initial_date_list[0]) + 1  # soma no valor 1 da data do txt (o mes) tres meses
-            current_month = int(date_current_list[0])+1  # pega apenas o valor 1 da data atual (mes)
-            print(month_variation)
-
-            if (month_variation == current_month):  # se na soma feita anteriormente o valor do mes der igual ao mes atual entra aqui
-                print("Aparece lembrete")
-                tela_home.show()
-
-                # e abre o lembrete de que tem que atualizar o contrato
-
-            else:  # se não, fecha o programa
-                sys.exit(0)
+        for msg in all_inbox:
+            if msg.Class==43:
+                if msg.SenderEmailType=='EX':
+                    pass
+                else:
+                    if msg.SenderEmailAddress == "viniciusventura29@icloud.com":
+                        #chamar tela de notificação
+                        print(msg)
+                        msg.Move(acc.Folders('Teste'))
+                            
+        
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -303,8 +280,7 @@ grafico = Grafico()
 cliente = Cliente()
 atualizar = Atualizar()
 ui_form = Ui_Form()
-# tempo = Tempo()
-# tempo.timer()
+
 
 #BTN TELA HOME
 tela_home.Button_avancar.clicked.connect(Main.exibicao_opcoes)
@@ -345,8 +321,6 @@ tela_aviso_atualizacao.Button_cancelar.clicked.connect(Main.aviso_atualizacao_ca
 
 #BTN TELA AVISO ATUALIZACAO DE MEDIA MENSAL
 tela_aviso_med_mensal.Button_ok.clicked.connect(Main.close_aviso_med)
-#tela_aviso_med_mensal.Button_ok.clicked.connect(Ui_Form.count)
-#tela_aviso_med_mensal.Button_ok.clicked.connect(Ui_Form.timer)
 
 
 tela_home.show()
