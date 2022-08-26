@@ -1,3 +1,4 @@
+import sys
 from PyQt5 import uic, QtWidgets,QtCore, QtGui
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -14,6 +15,7 @@ tela_tamarana = uic.loadUi('janelas/tela_tamarana.ui')
 tela_atualizacao = uic.loadUi('janelas/tela_atualizacao.ui')
 tela_aviso_atualizacao = uic.loadUi('janelas/tela_atencao_atualizacao.ui')
 tela_aviso_med_mensal = uic.loadUi('janelas/tela_aviso_med_mensalidade.ui')
+tela_notificacao = uic.loadUi('janelas/telanotificacao.ui')
 
 fonte = pd.read_excel('planilha/LME_fonte_de_dados.xlsx')
 media_mensal = pd.read_excel('planilha/LME_media_mensal.xlsx')
@@ -99,11 +101,11 @@ class Main:
                     pass
                 else:
                     if msg.SenderEmailAddress == "viniciusventura29@icloud.com":
-                        #chamar tela de notificação
-                        print(msg)
-                        msg.Move(acc.Folders('Teste'))
-                            
-        
+                        tela_notificacao.show()
+                        msg.Move(acc.Folders('Itens Excluídos'))
+                    else:
+                        pass
+                        
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -323,6 +325,6 @@ tela_aviso_atualizacao.Button_cancelar.clicked.connect(Main.aviso_atualizacao_ca
 tela_aviso_med_mensal.Button_ok.clicked.connect(Main.close_aviso_med)
 
 
-tela_home.show()
+Main.getExcel()
 app.exec()
 
