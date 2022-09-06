@@ -3,23 +3,22 @@ from PyQt5 import uic, QtWidgets,QtCore, QtGui
 import matplotlib.pyplot as plt
 import pandas as pd
 from datetime import date
-import win32com.client as cli
 
 app = QtWidgets.QApplication([])
 
-tela_home = uic.loadUi('janelas/tela_home.ui')
-tela_opcoes = uic.loadUi('janelas/tela_opcoes.ui')
-tela_variacao = uic.loadUi('janelas/tela_variacao_metal.ui')
-tela_clientes = uic.loadUi('janelas/tela_escolha_cliente.ui')
-tela_tamarana = uic.loadUi('janelas/tela_tamarana.ui')
-tela_atualizacao = uic.loadUi('janelas/tela_atualizacao.ui')
-tela_aviso_atualizacao = uic.loadUi('janelas/tela_atencao_atualizacao.ui')
-tela_aviso_med_mensal = uic.loadUi('janelas/tela_aviso_med_mensalidade.ui')
-tela_notificacao = uic.loadUi('janelas/telanotificacao.ui')
+tela_home = uic.loadUi('../janelas/tela_home.ui')
+tela_opcoes = uic.loadUi('../janelas/tela_opcoes.ui')
+tela_variacao = uic.loadUi('../janelas/tela_variacao_metal.ui')
+tela_clientes = uic.loadUi('../janelas/tela_escolha_cliente.ui')
+tela_tamarana = uic.loadUi('../janelas/tela_tamarana.ui')
+tela_atualizacao = uic.loadUi('../janelas/tela_atualizacao.ui')
+tela_aviso_atualizacao = uic.loadUi('../janelas/tela_atencao_atualizacao.ui')
+tela_aviso_med_mensal = uic.loadUi('../janelas/tela_aviso_med_mensalidade.ui')
 
-fonte = pd.read_excel('planilha/LME_fonte_de_dados.xlsx')
-media_mensal = pd.read_excel('planilha/LME_media_mensal.xlsx')
-table_dolar = pd.read_excel('planilha/LME_fonte_de_dados.xlsx', sheet_name='dolar')
+
+fonte = pd.read_excel('../planilha/LME_fonte_de_dados.xlsx')
+media_mensal = pd.read_excel('../planilha/LME_media_mensal.xlsx')
+table_dolar = pd.read_excel('../planilha/LME_fonte_de_dados.xlsx', sheet_name='dolar')
 
 
 class Main:
@@ -84,41 +83,20 @@ class Main:
         tela_aviso_med_mensal.show()
 
     def close_aviso_med():
-        tela_aviso_med_mensal.close()
-        
-    def getExcel():
-        outlook = cli.Dispatch('Outlook.Application')
-        namespace = outlook.GetNamespace("MAPI")
-
-        acc = namespace.Folders['Campinas.ETS@br.bosch.com']
-        inbox = acc.Folders('Inbox')
-
-        all_inbox = inbox.Items
-
-        for msg in all_inbox:
-            if msg.Class==43:
-                if msg.SenderEmailType=='EX':
-                    pass
-                else:
-                    if msg.SenderEmailAddress == "viniciusventura29@icloud.com":
-                        tela_notificacao.show()
-                        msg.Move(acc.Folders('Itens Excluídos'))
-                    else:
-                        pass
-                        
+        tela_aviso_med_mensal.close()                 
 
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(248, 268)
-        Form.setWindowIcon(QtGui.QIcon("img/calendar-service.svg"))
+        Form.setWindowIcon(QtGui.QIcon("../img/calendar-service.svg"))
         Form.setMaximumHeight(268)
         Form.setMaximumWidth(248)
         Form.setStyleSheet("background-color:#fff;")
         self.icon_info = QtWidgets.QLabel(Form)
         self.icon_info.setGeometry(QtCore.QRect(90, 5, 71, 71))
         self.icon_info.setText("")
-        self.icon_info.setPixmap(QtGui.QPixmap("img/alert-warning-filled.svg"))
+        self.icon_info.setPixmap(QtGui.QPixmap("../img/alert-warning-filled.svg"))
         self.icon_info.setScaledContents(True)
         self.icon_info.setObjectName("icon_info")
         self.label_atencao = QtWidgets.QLabel(Form)
@@ -138,7 +116,7 @@ class Ui_Form(object):
         self.button_ok.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.button_ok.setStyleSheet("background-color:#007BC0;color:#fff;border-radius:7px")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("img/checkmark-bold (1).svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("../img/checkmark-bold (1).svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.button_ok.setIcon(icon)
         self.button_ok.setIconSize(QtCore.QSize(18, 18))
         self.button_ok.setAutoExclusive(False)
@@ -150,7 +128,7 @@ class Ui_Form(object):
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(0, 260, 251, 151))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("img/Bosch-Supergraphic.svg"))
+        self.label.setPixmap(QtGui.QPixmap("../img/Bosch-Supergraphic.svg"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.label_atencao_2 = QtWidgets.QLabel(Form)
@@ -209,7 +187,7 @@ class Atualizar:
         self.values.insert(0, self.mes_escrit)
         print(self.values)
         media_mensal.loc[len(media_mensal) + 1] = self.values
-        media_mensal.to_excel('planilha/LME_media_mensal.xlsx', index = False)
+        media_mensal.to_excel('../planilha/LME_media_mensal.xlsx', index = False)
 
     def mes_atual(self):
         cont = 0
@@ -325,6 +303,6 @@ tela_aviso_atualizacao.Button_cancelar.clicked.connect(Main.aviso_atualizacao_ca
 tela_aviso_med_mensal.Button_ok.clicked.connect(Main.close_aviso_med)
 
 
-Main.getExcel()
+Main.exibicao_home()
 app.exec()
 
